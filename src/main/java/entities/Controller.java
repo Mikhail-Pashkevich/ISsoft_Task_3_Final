@@ -2,6 +2,7 @@ package entities;
 
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,8 +25,40 @@ public class Controller {
         return controller;
     }
 
-    public int nearest(int floorNumber) {
-        throw new UnsupportedOperationException();
+    public int nearestForGoUp(int floorNumber) {
+        int nearest = nearest(callUp.stream().toList(), floorNumber);
+        System.out.println("nearest up " + nearest);
+        return nearest;
+    }
+
+    public int nearestForGoDown(int floorNumber) {
+        int nearest = nearest(callDown.stream().toList(), floorNumber);
+        System.out.println("nearest down " + nearest);
+        return nearest;
+    }
+
+    public int nearest(List<Integer> floors, int floorNumber) {
+        if (!floors.isEmpty()) {
+            if (floors.contains(floorNumber)) {
+                return floorNumber;
+            }
+            if (floorNumber < floors.get(0)) {
+                return floors.get(0);
+            }
+            if (floors.get(floors.size() - 1) < floorNumber) {
+                return floors.get(floors.size() - 1);
+            }
+
+            for (int i = 0; i < floors.size() - 1; i++) {
+                if (floors.get(i) < floorNumber && floorNumber < floors.get(i + 1)) {
+                    if (Math.abs(floorNumber - floors.get(i)) < Math.abs(floorNumber - floors.get(i + 1))) {
+                        return floors.get(i);
+                    }
+                    return floors.get(i + 1);
+                }
+            }
+        }
+        return -1;
     }
 
     public boolean isUpContain(int floorNumber) {
@@ -36,11 +69,20 @@ public class Controller {
         return this.callDown.contains(floorNumber);
     }
 
-    public void addUpCall(int floorNumber) {
+    public void addCallUp(int floorNumber) {
         this.callUp.add(floorNumber);
     }
 
-    public void addDownCall(int floorNumber) {
+    public void addCallDown(int floorNumber) {
         this.callDown.add(floorNumber);
     }
+
+    public void removeCallUp(int floorNumber) {
+        this.callUp.remove(floorNumber);
+    }
+
+    public void removeCallDown(int floorNumber) {
+        this.callDown.remove(floorNumber);
+    }
+
 }

@@ -10,14 +10,15 @@ import static java.lang.Math.random;
 public class Person {
     private final int totalFloor;
     private final double weight;
+    private String name;
 
     public Person(int totalFloor, double weight) {
         this.totalFloor = totalFloor;
         this.weight = weight;
     }
 
-    public static Person generatePerson(int maxFloor) {
-        return new Person((int) (random() * maxFloor + 1), random() * 100 + 50);
+    public static Person generateAnyPerson(int maxFloor) {
+        return new Person((int) (random() * maxFloor ), random() * 100 + 50);
     }
 
     public boolean isGoUp(int currentFloor) {
