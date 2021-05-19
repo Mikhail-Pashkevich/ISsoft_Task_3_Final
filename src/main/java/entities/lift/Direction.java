@@ -1,4 +1,4 @@
-package entities;
+package entities.lift;
 
 public enum Direction {
     GO_UP,

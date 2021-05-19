@@ -1,4 +1,4 @@
-package entities;
+package entities.controller;
 
 import lombok.Getter;
 
@@ -10,12 +10,10 @@ import java.util.TreeSet;
 public class Controller {
     private static Controller controller;
     // saves the floor from which the call was made
-    private final Set<Integer> callUp;
-    private final Set<Integer> callDown;
+    private final Set<Integer> callUp = new TreeSet<>();
+    private final Set<Integer> callDown = new TreeSet<>();
 
     private Controller() {
-        this.callUp = new TreeSet<>();
-        this.callDown = new TreeSet<>();
     }
 
     public static Controller getController() {
@@ -69,20 +67,19 @@ public class Controller {
         return this.callDown.contains(floorNumber);
     }
 
-    public void addCallUp(int floorNumber) {
+    public synchronized void addCallUp(int floorNumber) {
         this.callUp.add(floorNumber);
     }
 
-    public void addCallDown(int floorNumber) {
+    public synchronized void addCallDown(int floorNumber) {
         this.callDown.add(floorNumber);
     }
 
-    public void removeCallUp(int floorNumber) {
+    public synchronized void removeCallUp(int floorNumber) {
         this.callUp.remove(floorNumber);
     }
 
-    public void removeCallDown(int floorNumber) {
+    public synchronized void removeCallDown(int floorNumber) {
         this.callDown.remove(floorNumber);
     }
-
 }

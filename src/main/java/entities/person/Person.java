@@ -1,24 +1,26 @@
-package entities;
+package entities.person;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import static java.lang.Math.random;
 
 @Getter
-@Setter
+@ToString
 public class Person {
     private final int totalFloor;
-    private final double weight;
+    private final int weight;
+    @Setter
     private String name;
 
-    public Person(int totalFloor, double weight) {
+    public Person(int totalFloor, int weight) {
         this.totalFloor = totalFloor;
         this.weight = weight;
     }
 
     public static Person generateAnyPerson(int maxFloor) {
-        return new Person((int) (random() * maxFloor ), random() * 100 + 50);
+        return new Person((int) (random() * maxFloor), (int) (random() * 100 + 50));
     }
 
     public boolean isGoUp(int currentFloor) {
