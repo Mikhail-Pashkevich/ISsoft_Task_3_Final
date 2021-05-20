@@ -1,8 +1,8 @@
-package entities;
+package full.building.entities;
 
-import entities.building.Building;
+import full.building.entities.building.Building;
 
-import static entities.building.Building.getBuilding;
+import static full.building.entities.building.Building.getBuilding;
 
 public class Runner {
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
-package entities.floor;
+package full.building.entities.floor;
 
-import entities.person.Person;
+import full.building.entities.person.Person;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayDeque;

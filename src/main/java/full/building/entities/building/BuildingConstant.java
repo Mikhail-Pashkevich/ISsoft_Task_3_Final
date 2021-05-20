@@ -1,4 +1,4 @@
-package entities.building;
+package full.building.entities.building;
 
 public class BuildingConstant {
     public static final int MAX_FLOOR = 6;

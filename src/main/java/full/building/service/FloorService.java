@@ -1,15 +1,18 @@
-package service;
+package full.building.service;
 
-import entities.controller.Controller;
-import entities.floor.Floor;
-import entities.person.Person;
+import full.building.entities.controller.Controller;
+import full.building.entities.floor.Floor;
+import full.building.entities.person.Person;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-import static entities.controller.Controller.getController;
-import static entities.floor.FloorConstant.QUEUE_SIZE;
-import static entities.person.Person.generateAnyPerson;
+import static full.building.entities.building.Building.generatePerson;
+import static full.building.entities.building.BuildingConstant.MAX_FLOOR;
+import static full.building.entities.controller.Controller.getController;
+import static full.building.entities.floor.FloorConstant.QUEUE_SIZE;
 import static java.lang.Thread.currentThread;
 
+@Slf4j
 public class FloorService implements Runnable {
     private static final Controller controller = getController();
     @Getter
@@ -33,22 +36,19 @@ public class FloorService implements Runnable {
             }
 
             if (floor.getQueueUp().size() + floor.getQueueDown().size() < QUEUE_SIZE) {
-                person = generateAnyPerson(floor.getMaxFloor());
-
+                person = generatePerson(MAX_FLOOR);
 
                 if (person.isGoUp(floor.getFloorNumber())) {
-                    //TODO: remove
                     person.setName("person from " + currentThread().getName() + " go to " + person.getTotalFloor());
-                    System.out.println(person.getName());
-                    //
+                    log.info(currentThread().getName() + ": " + person.getName());
+
                     floor.addToQueueUp(person);
                     controller.addCallUp(floor.getFloorNumber());
                 } else {
                     if (person.isGoDown(floor.getFloorNumber())) {
-                        //TODO: remove
                         person.setName("person from " + currentThread().getName() + " go to " + person.getTotalFloor());
-                        System.out.println(person.getName());
-                        //
+                        log.info(currentThread().getName() + ": " + person.getName());
+
                         floor.addToQueueDown(person);
                         controller.addCallDown(floor.getFloorNumber());
                     }

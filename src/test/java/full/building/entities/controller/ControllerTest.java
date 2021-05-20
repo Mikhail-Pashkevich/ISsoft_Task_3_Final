@@ -1,4 +1,4 @@
-package entities.controller;
+package full.building.entities.controller;
 
 import org.junit.jupiter.api.Test;
 

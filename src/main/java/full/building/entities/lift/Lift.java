@@ -1,8 +1,8 @@
-package entities.lift;
+package full.building.entities.lift;
 
-import entities.building.Building;
-import entities.controller.Controller;
-import entities.person.Person;
+import full.building.entities.building.Building;
+import full.building.entities.controller.Controller;
+import full.building.entities.person.Person;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static entities.building.Building.getBuilding;
-import static entities.controller.Controller.getController;
-import static entities.lift.Direction.*;
-import static entities.lift.LiftConstant.*;
+import static full.building.entities.building.Building.getBuilding;
+import static full.building.entities.controller.Controller.getController;
+import static full.building.entities.lift.LiftConstant.*;
+import static full.building.entities.lift.LiftState.*;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
@@ -23,26 +23,20 @@ import static java.lang.Thread.sleep;
 @Getter
 @Setter
 public class Lift {
-    private static Controller controller = getController();
-    private static Building building = getBuilding();
     private final double maxWeight;
-    private int maxFloor;
-    private int maxLift;
-    private Direction direction;
+    private LiftState state;
     private int currentFloor;
     private double currentWeight;
     private List<Integer> activeFloors;
     private List<Person> personList;
 
 
-    public Lift(int maxFloor, double maxWeight, int maxLift) {
-        this.maxFloor = maxFloor;
-        this.maxLift = maxLift;
-        this.direction = CURRENT;
+    public Lift(double maxWeight) {
+        this.state = STAND_CURRENT;
         this.currentFloor = 0;
         this.maxWeight = maxWeight;
         this.currentWeight = 0;
-        this.activeFloors = new ArrayList<>(maxFloor);
+        this.activeFloors = new ArrayList<>();
         this.personList = new ArrayList<>();
     }
 
@@ -55,16 +49,16 @@ public class Lift {
 
         if (nearest == forGoDown && nearest != -1) {
             activateFloor(forGoDown);
-            direction = GO_DOWN;
+            state = GOING_DOWN;
             return;
         }
         if (nearest == forGoUp && nearest != -1) {
             activateFloor(forGoUp);
-            direction = GO_UP;
+            state = GOING_UP;
             return;
         }
 
-        direction = WAIT;
+        state = LiftState.WAIT_ACTION;
     }
 
     public void activateFloor(int floorNumber) {
@@ -78,29 +72,26 @@ public class Lift {
     }
 
     public void goUp() {
-        System.out.println("go up current " + (currentFloor + 1));
-        System.out.println("act flo " + activeFloors.toString());
+        log.info(currentThread().getName() + ": go up from " + currentFloor);
         this.currentFloor++;
         try {
             sleep(LIFT_SPEED);
         } catch (InterruptedException e) {
-            log.info("can't go up", e);
+            log.error("can't go up", e);
         }
     }
 
     public void goDown() {
-        System.out.println("go down current " + (currentFloor + 1));
-        System.out.println("act flo " + activeFloors.toString());
+        log.info(currentThread().getName() + ": go down from " + currentFloor);
         this.currentFloor--;
         try {
             sleep(LIFT_SPEED);
         } catch (InterruptedException e) {
-            log.info("can't go down", e);
+            log.error("can't go down", e);
         }
     }
 
     public void goToActiveFloor() {
-        System.out.println("go to active");
         if (!isActiveFloorsEmpty()) {
             while (currentFloor != activeFloors.get(0)) {
                 if (currentFloor < activeFloors.get(0)) {
@@ -113,66 +104,62 @@ public class Lift {
     }
 
     public void openDoor() {
-        System.out.println("open door");
+        log.info(currentThread().getName() + ": open door");
         deactivateFloor(currentFloor);
         try {
             sleep(OPEN_OR_CLOSE_DOOR);
         } catch (InterruptedException e) {
-            log.info("can't open door", e);
+            log.error("can't open door", e);
         }
     }
 
     public void closeDoor() {
-        System.out.println("close door");
+        log.info(currentThread().getName() + ": close door");
         try {
             sleep(OPEN_OR_CLOSE_DOOR);
         } catch (InterruptedException e) {
-            log.info("can't close door", e);
+            log.error("can't close door", e);
         }
     }
 
     public void removePeopleForCurrent() {
-        System.out.println("remove people");
         personList.forEach(person -> {
             if (person.getTotalFloor() == currentFloor) {
                 currentWeight -= person.getWeight();
-                System.out.println(person.getName() + " remove " + currentThread().getName());
+                log.info(currentThread().getName() + ": remove " + person.getName());
             }
         });
 
         personList.removeIf(person -> person.getTotalFloor() == currentFloor);
     }
 
-    public void addPeople(Direction direction) {
+    public void addPeopleForCurrent(LiftState state) {
         Building building = getBuilding();
 
-        System.out.println("add people to go from " + currentFloor + " current weight = " + currentWeight);
-        System.out.println("queue up " + building.getFloor(currentFloor).getQueueUp().toString());
-        System.out.println("queue down " + building.getFloor(currentFloor).getQueueDown().toString());
-        System.out.println("person list " + personList.toString());
+        log.info(currentThread().getName() + ": add people to go from " + currentFloor);
+        log.info(currentThread().getName() + ": current person list " + personList.toString());
         while (true) {
 
-            Optional<Person> person = switch (direction) {
-                case GO_UP -> building.getFloor(currentFloor).getFromQueueUp();
-                case GO_DOWN -> building.getFloor(currentFloor).getFromQueueDown();
+            Optional<Person> person = switch (state) {
+                case GOING_UP -> building.getFloor(currentFloor).getFromQueueUp();
+                case GOING_DOWN -> building.getFloor(currentFloor).getFromQueueDown();
                 default -> Optional.empty();
             };
 
             if (person.isPresent() && person.get().getWeight() + currentWeight < maxWeight) {
 
-                person = switch (direction) {
-                    case GO_UP -> building.getFloor(currentFloor).removeFromQueueUp();
-                    case GO_DOWN -> building.getFloor(currentFloor).removeFromQueueDown();
+                person = switch (state) {
+                    case GOING_UP -> building.getFloor(currentFloor).removeFromQueueUp();
+                    case GOING_DOWN -> building.getFloor(currentFloor).removeFromQueueDown();
                     default -> Optional.empty();
                 };
                 if (person.isPresent()) {
                     personList.add(person.get());
                     currentWeight += person.get().getWeight();
                     activateFloor(person.get().getTotalFloor());
-                    System.out.println(person.get().getName() + " set to " + currentThread().getName());
+                    log.info(currentThread().getName()+": "+person.get().getName() + " set"  );
                 }
             } else {
-                System.out.println("can't find");
                 return;
             }
         }
@@ -192,20 +179,20 @@ public class Lift {
 
     public void waitAction() {
         try {
-            sleep(WAIT_ACTION);
+            sleep(WAIT_ACTION_FROM_CONTROLLER);
         } catch (InterruptedException e) {
-            log.info("can't wait new action", e);
+            log.error("can't wait new action", e);
         }
     }
 
-    public Direction getAction() {
+    public LiftState getAction() {
         if (!isLiftEmpty()) {
-            return direction;
+            return state;
         } else {
             if (!isActiveFloorsEmpty()) {
-                return CURRENT;
+                return STAND_CURRENT;
             } else {
-                return WAIT;
+                return LiftState.WAIT_ACTION;
             }
         }
     }

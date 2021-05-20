@@ -1,4 +1,4 @@
-package entities.person;
+package full.building.entities.person;
 
 import org.junit.jupiter.api.Test;
 

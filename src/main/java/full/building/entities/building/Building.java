@@ -1,20 +1,22 @@
-package entities.building;
+package full.building.entities.building;
 
-import entities.floor.Floor;
-import entities.lift.Lift;
+import full.building.entities.floor.Floor;
+import full.building.entities.lift.Lift;
+import full.building.entities.person.Person;
 import lombok.Getter;
 import lombok.Setter;
-import service.FloorService;
-import service.LiftService;
+import full.building.service.FloorService;
+import full.building.service.LiftService;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static entities.building.BuildingConstant.MAX_FLOOR;
-import static entities.building.BuildingConstant.MAX_LIFT;
-import static entities.lift.LiftConstant.MAX_WEIGHT;
+import static full.building.entities.building.BuildingConstant.MAX_FLOOR;
+import static full.building.entities.building.BuildingConstant.MAX_LIFT;
+import static full.building.entities.lift.LiftConstant.MAX_WEIGHT;
+import static java.lang.Math.random;
 
 
 @Getter
@@ -37,12 +39,16 @@ public class Building {
         return building;
     }
 
-    public static Floor generateFloor(int maxFloor, int floorNumber) {
-        return new Floor(floorNumber, maxFloor, new ArrayDeque<>(), new ArrayDeque<>());
+    public static Floor generateFloor(int floorNumber) {
+        return new Floor(floorNumber, new ArrayDeque<>(), new ArrayDeque<>());
     }
 
-    public static Lift generateLift(int maxFloor, int maxWeight, int maxLift) {
-        return new Lift(maxFloor, maxWeight, maxLift);
+    public static Lift generateLift(int maxWeight) {
+        return new Lift(maxWeight);
+    }
+
+    public static Person generatePerson(int maxFloor) {
+        return new Person((int) (random() * maxFloor), (int) (random() * 100 + 50));
     }
 
     public synchronized void init() {
@@ -50,9 +56,9 @@ public class Building {
         lifts = new ArrayList<>(MAX_LIFT);
 
         IntStream.range(0, MAX_FLOOR)
-                .forEach(i -> floors.add(new FloorService(generateFloor(MAX_FLOOR, i))));
+                .forEach(i -> floors.add(new FloorService(generateFloor(i))));
         IntStream.range(0, MAX_LIFT)
-                .forEach(i -> lifts.add(new LiftService(generateLift(MAX_LIFT, MAX_WEIGHT, MAX_LIFT))));
+                .forEach(i -> lifts.add(new LiftService(generateLift(MAX_WEIGHT))));
     }
 
     public void startWork() {

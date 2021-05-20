@@ -1,4 +1,4 @@
-package entities.controller;
+package full.building.entities.controller;
 
 import lombok.Getter;
 
@@ -24,15 +24,11 @@ public class Controller {
     }
 
     public int nearestForGoUp(int floorNumber) {
-        int nearest = nearest(callUp.stream().toList(), floorNumber);
-        System.out.println("nearest up " + nearest);
-        return nearest;
+        return nearest(callUp.stream().toList(), floorNumber);
     }
 
     public int nearestForGoDown(int floorNumber) {
-        int nearest = nearest(callDown.stream().toList(), floorNumber);
-        System.out.println("nearest down " + nearest);
-        return nearest;
+        return nearest(callDown.stream().toList(), floorNumber);
     }
 
     public int nearest(List<Integer> floors, int floorNumber) {

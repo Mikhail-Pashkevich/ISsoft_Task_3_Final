@@ -1,16 +1,16 @@
-package entities.lift;
+package full.building.entities.lift;
 
-import entities.building.Building;
-import entities.controller.Controller;
-import entities.person.Person;
+import full.building.entities.building.Building;
+import full.building.entities.controller.Controller;
+import full.building.entities.person.Person;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static entities.building.Building.getBuilding;
-import static entities.lift.LiftConstant.MAX_WEIGHT;
-import static entities.lift.LiftState.*;
+import static full.building.entities.building.Building.getBuilding;
+import static full.building.entities.lift.LiftConstant.MAX_WEIGHT;
+import static full.building.entities.lift.LiftState.*;
 import static java.lang.Math.random;
 import static org.junit.jupiter.api.Assertions.*;
 

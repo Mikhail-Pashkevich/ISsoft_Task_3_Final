@@ -1,13 +1,16 @@
-package service;
+package full.building.service;
 
-import entities.controller.Controller;
-import entities.lift.Lift;
+import full.building.entities.controller.Controller;
+import full.building.entities.lift.Lift;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-import static entities.controller.Controller.getController;
-import static entities.lift.Direction.GO_DOWN;
-import static entities.lift.Direction.GO_UP;
+import static full.building.entities.controller.Controller.getController;
+import static full.building.entities.lift.LiftState.GOING_DOWN;
+import static full.building.entities.lift.LiftState.GOING_UP;
 
+
+@Slf4j
 public class LiftService implements Runnable {
     private static final Controller controller = getController();
     @Getter
@@ -22,43 +25,42 @@ public class LiftService implements Runnable {
         while (true) {
             if (lift.isActiveFloorsEmpty()) {
                 lift.addActiveFloor();
-                System.out.println("act flo " + lift.getActiveFloors().toString());
                 lift.goToActiveFloor();
             }
             switch (lift.getAction()) {
-                case GO_UP -> {
+                case GOING_UP -> {
                     if (lift.isActiveFloorsContainCurrent()
                             || (controller.isUpContain(lift.getCurrentFloor()) && lift.getCurrentWeight() <= 0.9 * lift.getMaxWeight())) {
                         controller.removeCallUp(lift.getCurrentFloor());
                         lift.openDoor();
                         lift.removePeopleForCurrent();
-                        lift.addPeople(GO_UP);
+                        lift.addPeopleForCurrent(GOING_UP);
                         lift.closeDoor();
                     }
                     if (!lift.isLiftEmpty()) {
                         lift.goUp();
                     }
                 }
-                case GO_DOWN -> {
+                case GOING_DOWN -> {
                     if (lift.isActiveFloorsContainCurrent()
                             || (controller.isDownContain(lift.getCurrentFloor()) && lift.getCurrentWeight() <= 0.9 * lift.getMaxWeight())) {
                         controller.removeCallDown(lift.getCurrentFloor());
                         lift.openDoor();
                         lift.removePeopleForCurrent();
-                        lift.addPeople(GO_DOWN);
+                        lift.addPeopleForCurrent(GOING_DOWN);
                         lift.closeDoor();
                     }
                     if (!lift.isLiftEmpty()) {
                         lift.goDown();
                     }
                 }
-                case CURRENT -> {
+                case STAND_CURRENT -> {
                     controller.removeCallDown(lift.getCurrentFloor());
                     lift.openDoor();
-                    lift.addPeople(lift.getDirection());
+                    lift.addPeopleForCurrent(lift.getState());
                     lift.closeDoor();
                 }
-                case WAIT -> lift.waitAction();
+                case WAIT_ACTION -> lift.waitAction();
             }
         }
     }
