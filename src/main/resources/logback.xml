@@ -1,29 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="FILE_FOR_ERRORS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>LogErrorFile.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>AllLogErrorFile.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
-            <totalSizeCap>20GB</totalSizeCap>
-            <maxHistory>10</maxHistory>
-        </rollingPolicy>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>LogInfoFile.log</file>
+        <file>LogFile.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>AllLogInfoFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>AllLogFile.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <totalSizeCap>20GB</totalSizeCap>
             <maxHistory>10</maxHistory>
@@ -33,12 +19,8 @@
         </encoder>
     </appender>
 
-
-    <root level="error">
-        <appender-ref ref="FILE_FOR_ERRORS"/>
-    </root>
-    <root level="debug">
-        <appender-ref ref="STDOUT"/>
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
 
